@@ -1,80 +1,56 @@
-from varibles import *
+from variables import *
 from cpp_work import *
 from data_work import *
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, Button, RadioButtons, TextBox
+from gui_work import *
 
 
-FIG, SUBPLOTS_AXES = plt.subplots(2, 4, sharex=False)
-
-for n, Hax in enumerate(axes[0]):
-    Hax.margins(0.0)
-    Hax.set_xlim(xmin=LIMS[0][0], xmax=LIMS[0][1])
-    Hax.set_ylim(ymin=LIMS[1][0], ymay=LIMS[1][1])
-    Hax.set_facecolor("grey")
-    temp = Hax.scatter(HData[:, LV, 2], HData[:, LV, 3],
-                       c=HData[:, LV, n], s=5)
-    Hplots.append(temp)
-for n, Dax in enumerate(axes[1]):
-    Dax.margins(0.0)
-    Dax.set_xlim(xmin=LIMS[2][0], xmax=LIMS[2][1])
-    Dax.set_ylim(ymin=LIMS[3][0], ymay=LIMS[3][1])
-    Dax.set_facecolor("grey")
-    temp = Dax.scatter(DData[:, LV, 2], DData[:, LV, 3],
-                       c=DData[:, LV, n], s=5)
-    Dplots.append(temp)
-
-axcolor = 'lightgoldenrodyellow'
-SAXES = []
-for n in range(len(NAMES)):
-    SAXES.append(plt.axes(
-        [0.05, 0.45 - 0.05 * n, 0.4, 0.03], facecolor=axcolor))
-
-SLIDERS = []
-for n in range(len(SAXES)):
-    SLIDERS.append(Slider(SAXES[n], LABELS[n],
-                          BORDERS[n][0], BORDERS[2],
-                          valinit=VALS[n], valstep=BORDERS[1]))
-
-
-def updateVals(val=None):
-    global SLIDERS, VALS
-    for n in range(len(SLIDERS)):
-        VALS[n] = SLIDERS.val
-
-
-for silder in SLIDERS:
-    slider.on_changed(updateVals)
-
-axRun = plt.axes([0.2, 0.05, 0.1, 0.04])
-button = Button(axRun, 'Run', color=axcolor, hovercolor='0.975')
-
-
-def run(event):
-    put_data()
+def run(event=None):
+    global SIZES, LENGTH, VARS, TO_DEGREE
+    put_data(SIZES, LENGTH, VARS, TO_DEGREE)
     run_cpp()
-    global HData, DData
-    HData = get_data("h_out.dat")
-    DData = get_data("d_out.dat")
-    for n, plot in enumerate(Hplots):
-        plot.set_offsets(HData[:, 1, 2:4])
-        plot.set_array(HData[:, 1, n])
-    for n, plot in enumerate(Dplots):
-        plot.set_offsets(DData[:, 1, 2:4])
-        plot.set_array(DData[:, 1, n])
-    fig.canvas.draw_idle()
+    global FIG, PLOTS, PARAMS, LIMS
+    plot_data_set(FIG, PLOTS, get_plot_data(PARAMS, LIMS))
 
 
-button.on_clicked(run)
+def update_vars(val=None):
+    global VARS, SLIDERS
+    for n, slider in enumerate(SLIDERS):
+        VARS[n] = slider.val
 
 
-def key_press(event):
-    if event.key == 'right':
+def update_scale(val=None):
+    global PARAMS, RADIO
+    PARAMS['scale'] = RADIO.value_selected
 
 
-FIG.canvas.mpl_connect('key_press_event', key_press)
+def update_params(val=None):
+    global PARAMS, CHECK
+    PARAMS['lambda filter'] = CHECK.get_status()[0]
 
-mng = plt.get_current_fig_manager()
-mng.window.showMaximized()
+
+def update_lambda_filter(val=None):
+    global PARAMS, TEXTBOX
+    PARAMS['lmin'] = float(TEXTBOX[0].text_disp.get_text())
+    PARAMS['lmax'] = float(TEXTBOX[1].text_disp.get_text())
+
+
+compile()
+
+FIG = fig_set()
+
+PLOT_AXES = plot_axes_set(FIG)
+SLIDER_AXES = slider_axes_set(FIG)
+BUTTON_AXIS = button_axis_set(FIG)
+RADIO_AXIS = radio_axis_set(FIG)
+CHECK_AXIS = check_axis_set(FIG)
+TEXTBOX_AXES = textbox_axes_set(FIG)
+
+PLOTS = plots_set(PLOT_AXES, PLOT_LIMS)
+SLIDERS = sliders_set(SLIDER_AXES, LABELS, VARS, BORDERS, update_vars)
+BUTTON = button_set(BUTTON_AXIS, "Run", run)
+RADIO = radio_set(RADIO_AXIS, ("lin", "sqrt", "log"), update_scale)
+CHECK = check_set(CHECK_AXIS, ("lambda filter",), update_params)
+TEXTBOX = textboxs_set(TEXTBOX_AXES, ["l min", "l max"], [
+    0.0, 10.0], update_lambda_filter)
+
 plt.show()

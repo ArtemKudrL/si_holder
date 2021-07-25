@@ -5,15 +5,10 @@
 #include <fstream>
 #include <iostream>
 
-struct Sizes
+struct ForInit
 {
     int COLS;
     int ROWS;
-    int LVSIZE;
-};
-
-struct ForIn
-{
     double LENGTH;
     double S_W;
     double S_TH;
@@ -25,9 +20,7 @@ struct ForIn
     double S_SS;
 };
 
-Sizes SIZES;
-
-ForIn INPUT;
+ForInit INPUT;
 
 Ray Source;
 Ray Holder;
@@ -42,7 +35,6 @@ void read_setup(const char* filename)
 {
     std::ifstream file(filename, std::ios::in | std::ios::binary);
 
-    file.read((char*)&SIZES, sizeof(SIZES));
     file.read((char*)&INPUT, sizeof(INPUT));
 
     file.close();
@@ -55,11 +47,7 @@ void read_lattice(const char* filename)
 
     int size;
     file.read((char*)&size, sizeof(int));
-    
-    if(size < SIZES.LVSIZE)
-        SIZES.LVSIZE = size;
-
-    Lattice = std::list<LatticeV>(SIZES.LVSIZE);
+    Lattice = std::list<LatticeV>(size);
 
     double buffer[3];
     Vector first_vector_direction(sin(INPUT.H_A) * cos(INPUT.H_B), sin(INPUT.H_A) * sin(INPUT.H_B), cos(INPUT.H_A));
@@ -126,11 +114,11 @@ void init(std::vector<Ray> &Rays)
     double Ymin = -INPUT.LENGTH * tan(INPUT.S_SS * 0.5);
     double Ymax = INPUT.LENGTH * tan(INPUT.S_SS * 0.5);
    
-    double xstep = (Xmax - Xmin) / (double)(SIZES.ROWS + 1);
-    double ystep = (Ymax - Ymin) / (double)(SIZES.COLS + 1);
+    double xstep = (Xmax - Xmin) / (double)(INPUT.ROWS + 1);
+    double ystep = (Ymax - Ymin) / (double)(INPUT.COLS + 1);
 
     // Finally Rays init
-    Rays = std::vector<Ray>(SIZES.COLS * SIZES.ROWS);
+    Rays = std::vector<Ray>(INPUT.COLS * INPUT.ROWS);
     auto it = Rays.begin();
     Vector temp;
     Vector tempSource(Source.p);
@@ -189,7 +177,7 @@ void intersection(std::vector<Ray> &Rays)
 }
 void diffraction(std::vector<Ray> &Rays)
 {
-    std::vector<Ray> result(SIZES.COLS * SIZES.ROWS * SIZES.LVSIZE);
+    std::vector<Ray> result(Rays.size() * Lattice.size());
     auto itR  = result.begin();
     for(auto &ray : Rays)
         for(auto &LV : Lattice)
@@ -218,7 +206,7 @@ void diffraction(std::vector<Ray> &Rays)
 void out(const char* filename, std::vector<Ray> &Rays)
 {
     std::ofstream file(filename, std::ios::out | std::ios::binary);
-
+    
     for(auto &ray : Rays)
     {
         file.write((char*)&(ray.I), sizeof(double));

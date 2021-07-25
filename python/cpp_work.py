@@ -1,9 +1,9 @@
 import os
 from struct import pack, unpack
-import numpy as np
+from numpy import fromfile, deg2rad
 
-INPUT_DIRECTORY = "./../data/in/"
-OUTPUT_FILE = "./../data/out/setup.dat"
+INPUT_DIRECTORY = "./../data/out/"
+OUTPUT_FILE = "./../data/in/setup.dat"
 
 
 def compile():
@@ -14,22 +14,24 @@ def run_cpp():
     os.system("./../bin/main")
 
 
-def put_data(SIZES, VALS, TO_DEGREE):
+def put_data(SIZES, LENGTH, VARS, TO_DEGREE):
     file = open(OUTPUT_FILE, "wb")
 
     for size in SIZES:
         file.write(pack('i', size))
 
-    for n, val in enumerate(VALS):
+    file.write(pack('d', LENGTH))
+
+    for n, var in enumerate(VARS):
         if TO_DEGREE[n]:
-            file.write(pack('d', np.deg2rad(val)))
+            file.write(pack('d', deg2rad(var)))
         else:
-            file.write(pack('d', val))
+            file.write(pack('d', var))
 
     file.close()
 
 
 def get_data(filename):
-    Data = np.fromfile(INPUT_DIRECTORY + filename, dtype=float)
+    Data = fromfile(INPUT_DIRECTORY + filename, dtype=float)
 
     return Data.reshape((len(Data) // 4, 4))
