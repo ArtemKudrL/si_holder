@@ -13,17 +13,29 @@ def fig_set():
 
 
 def plot_axes_set(figure):
-    grid = plt.GridSpec(2, 4, left=0.035, bottom=0.425,
-                        right=0.965, top=0.965, figure=figure)
+    grid1 = plt.GridSpec(2, 2, left=0.035, bottom=0.425,
+                        right=0.44, top=0.965, figure=figure)
+    grid2 = plt.GridSpec(1, 4, left=0.65, bottom=0.035,
+                    right=0.965, top=0.965, figure=figure)
+
+    figure.subplots_adjust(hspace=0, wspace=0)
 
     result = []
-    for row in range(2):
-        temp = []
-        for col in range(4):
-            temp.append(
-                figure.add_subplot(grid[row, col]))
-        result.append(temp)
 
+    temp = []
+    for row in range(2):
+        for col in range(2):
+            temp.append(
+                    figure.add_subplot(grid1[row, col]))
+    result.append(temp)
+
+    temp = []
+    for col in range(4):
+        temp.append(
+                figure.add_subplot(grid2[0, col]))
+      
+    result.append(temp)
+    
     return result
 
 
@@ -59,7 +71,7 @@ def plots_set(axes, lims):
         temp = []
         for col in row:
             Z = np.random.rand(10, 10)
-            temp.append(col.imshow(Z, cmap='viridis',
+            temp.append(col.imshow(Z, cmap='gnuplot',
                                    aspect='auto',
                                    extent=lims[n]))
         result.append(temp)

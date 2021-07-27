@@ -2,16 +2,16 @@ import os
 from struct import pack, unpack
 from numpy import fromfile, deg2rad
 
-INPUT_DIRECTORY = "./../data/out/"
-OUTPUT_FILE = "./../data/in/setup.dat"
+INPUT_DIRECTORY = ".\\..\\data\\out\\"
+OUTPUT_FILE = ".\\..\\data\\in\\setup.dat"
 
 
 def compile():
-    os.system("g++ -std=c++17 ./../src/main.cpp ./../src/func.cpp ./../src/vector.cpp ./../src/quaternion.cpp -I./../include -o ./../bin/main")
+    os.system("g++ -std=c++17 .\\..\\src\\main.cpp .\\..\\src\\func.cpp .\\..\\src\\vector.cpp .\\..\\src\\quaternion.cpp -I.\\..\\include -o .\\..\\bin\\main.exe")
 
 
 def run_cpp():
-    os.system("./../bin/main")
+    os.system(".\\..\\bin\\main.exe")
 
 
 def put_data(SIZES, LENGTH, VARS, TO_DEGREE):
