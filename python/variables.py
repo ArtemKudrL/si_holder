@@ -1,4 +1,4 @@
-SIZES = [100, 100]
+SIZES = [300, 200]
 
 LENGTH = 200.0
 
@@ -33,15 +33,23 @@ LIMS = [(-10.0, 10.0,
         (-4.0, 4.0,
          -30.0, 30.0)]
 
-PLOT_LIMS = [(-10.0, 10.0,
-              -10.0, 10.0),
 
-             (-4.0, 4.0,
-              0, 1200)]
+PLOT_LIMS = [[-10.0, 10.0,
+              -10.0, 10.0],
+
+             [-4.0, 4.0,
+              -30.0, 30.0]]
+
 
 PARAMS = {'scale': 'lin',
           'lambda filter': False,
+          'detector mask': False,
+          'autorun': False,
           'rows': 100,
           'cols': 100,
           'lmin': 0.0,
           'lmax': 10.0}
+
+CURRENT_SLIDER = 0
+
+LV = "1.0, 1.0, 1.0"
